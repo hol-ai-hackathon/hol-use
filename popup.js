@@ -298,9 +298,36 @@ class ChatManager {
     }
 
     displayEnvironmentOptions() {
+        const envDiv = document.createElement('div');
+        envDiv.className = 'summary-container';
+        envDiv.innerHTML = `
+            <div class="summary-title">Environment Details:</div>
+            <div class="env-detail">
+                <span class="detail-label">Lab:</span>
+                <span class="detail-value">${this.selectedDR.dr} (${this.selectedDR.name})</span>
+            </div>
+            <div class="env-detail">
+                <span class="detail-label">Status:</span>
+                <span class="detail-value status-active">Active</span>
+            </div>
+            <div class="env-detail">
+                <span class="detail-label">Expiry:</span>
+                <span class="detail-value expiry-warning">14 days remaining</span>
+            </div>
+            <div class="env-detail">
+                <span class="detail-label">Environment URL:</span>
+                <span class="detail-value"><a href="https://author-p35437-e1520092.adobeaemcloud.com/" target="_blank" class="env-link">AEM</a></span>
+            </div>
+            <div class="env-detail">
+                <span class="detail-label">IMS Org:</span>
+                <span class="detail-value">Adobe Hands-on Labs 3</span>
+            </div>
+        `;
+        this.displayMessage(envDiv);
+
         this.currentState = 'env_options';
-        this.displayMessage("Environment Options:", false, [
-            { text: "Request Extension", value: "request_extension" },
+        this.displayMessage("Choose an option:", false, [
+            { text: "Request 1 Week Extension", value: "request_extension" },
             { text: "Request Additional Features", value: "request_features" },
             { text: "Back to Lab Options", value: "back_to_management" }
         ]);
@@ -351,21 +378,105 @@ class ChatManager {
         }
     }
 
+    displayAdditionalFeaturesOptions() {
+        const features = [
+            { id: 'dynamic_media', name: 'Dynamic Media' },
+            { id: 'brand_portal', name: 'Brand Portal' },
+            { id: 'content_automation', name: 'Content Automation' },
+            { id: 'workfront_integration', name: 'Workfront Integration' }
+        ];
+
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'summary-container';
+        messageDiv.innerHTML = `
+            <div class="summary-title">Select Additional Features:</div>
+            <div class="summary-item">Choose the features you would like to request</div>
+        `;
+        this.displayMessage(messageDiv);
+
+        const optionsDiv = document.createElement('div');
+        optionsDiv.className = 'checkbox-options';
+
+        features.forEach(feature => {
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = feature.id;
+            checkbox.value = feature.id;
+            
+            const label = document.createElement('label');
+            label.htmlFor = feature.id;
+            label.textContent = feature.name;
+            
+            const wrapper = document.createElement('div');
+            wrapper.className = 'checkbox-wrapper';
+            wrapper.appendChild(checkbox);
+            wrapper.appendChild(label);
+            
+            optionsDiv.appendChild(wrapper);
+        });
+
+        const confirmButton = document.createElement('button');
+        confirmButton.textContent = 'Confirm Selection';
+        confirmButton.className = 'confirm-button';
+        confirmButton.addEventListener('click', () => this.handleAdditionalFeaturesSelection());
+
+        const messageContainer = document.createElement('div');
+        messageContainer.appendChild(optionsDiv);
+        messageContainer.appendChild(confirmButton);
+        
+        this.displayMessage(messageContainer);
+        this.currentState = 'selecting_features';
+    }
+
+    handleAdditionalFeaturesSelection() {
+        const selectedFeatures = new Set();
+        const checkboxes = document.querySelectorAll('.checkbox-options input:checked');
+        
+        if (checkboxes.length === 0) {
+            this.displayMessage("Please select at least one feature");
+            return;
+        }
+
+        checkboxes.forEach(checkbox => {
+            selectedFeatures.add(checkbox.value);
+        });
+
+        const featuresDiv = document.createElement('div');
+        featuresDiv.className = 'summary-container';
+        featuresDiv.innerHTML = `
+            <div class="summary-title">Additional Features Request</div>
+            <div class="summary-item">Your request for the following features has been submitted:</div>
+            ${Array.from(selectedFeatures).map(feature => `
+                <div class="summary-item">- ${feature.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</div>
+            `).join('')}
+            <div class="summary-item">You'll receive a confirmation once the requested features are configured</div>
+        `;
+        this.displayMessage(featuresDiv, false, [
+            { text: "Back to Lab Options", value: "back_to_management" }
+        ]);
+        this.currentState = 'lab_management';
+    }
+
     handleEnvironmentOptions(input) {
         switch(input.toLowerCase()) {
             case 'request_extension':
-                this.displayMessage("Extension request submitted.", false, [
+                const extensionDiv = document.createElement('div');
+                extensionDiv.className = 'summary-container';
+                extensionDiv.innerHTML = `
+                    <div class="summary-title">Extension Request Submitted</div>
+                    <div class="summary-item">Your request for lab extension has been submitted for review.</div>
+                    <div class="summary-item">You will be notified once approved.</div>
+                `;
+                this.displayMessage(extensionDiv, false, [
                     { text: "Back to Lab Options", value: "back_to_management" }
                 ]);
+                this.currentState = 'lab_management';
                 break;
+
             case 'request_features':
-                this.displayMessage("Additional features request submitted.", false, [
-                    { text: "Back to Lab Options", value: "back_to_management" }
-                ]);
+                this.displayAdditionalFeaturesOptions();
                 break;
-            case 'back_to_env':
-                this.displayEnvironmentOptions();
-                break;
+
             case 'back_to_management':
                 this.displayLabManagementOptions();
                 break;

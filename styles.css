@@ -278,4 +278,68 @@ body {
 
 .slack-link:hover {
     text-decoration: underline;
+}
+
+.env-link {
+    color: #ec0d02;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.env-link:hover {
+    text-decoration: underline;
+}
+
+.env-detail {
+    margin: 8px 0;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+
+.detail-label {
+    font-weight: 600;
+    min-width: 120px;
+    color: #444;
+}
+
+.detail-value {
+    color: #666;
+}
+
+.status-active {
+    color: #2d9d78;
+    font-weight: 500;
+}
+
+.status-inactive {
+    color: #b4b4b4;
+    font-weight: 500;
+}
+
+.expiry-warning {
+    color: #e68619;
+    font-weight: 500;
+}
+
+.expiry-critical {
+    color: #ec0d02;
+    font-weight: 500;
+}
+
+.env-link {
+    color: #ec0d02;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.env-link:hover {
+    text-decoration: underline;
+}
+
+.summary-container {
+    background-color: #f8f8f8;
+    padding: 12px;
+    border-radius: 4px;
+    margin: 8px 0;
 } 
