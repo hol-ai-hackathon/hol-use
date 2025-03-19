@@ -342,4 +342,28 @@ body {
     padding: 12px;
     border-radius: 4px;
     margin: 8px 0;
+}
+
+.loading-container {
+    text-align: center;
+    padding: 20px;
+}
+
+.loading-spinner {
+    border: 3px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 3px solid #ec0d02;
+    width: 24px;
+    height: 24px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 12px;
+}
+
+.loading-text {
+    color: #666;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 } 

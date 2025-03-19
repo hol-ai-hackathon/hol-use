@@ -52,6 +52,7 @@ class ChatManager {
         }
 
         this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
+        return messageDiv;
     }
 
     displayInitialOptions() {
@@ -231,6 +232,9 @@ class ChatManager {
             case 'confirm_users_needed':
                 this.handleUserConfirmation(userInput);
                 break;
+            case 'confirm_tou':
+                this.handleTOUConfirmation(userInput);
+                break;
         }
     }
 
@@ -359,11 +363,15 @@ class ChatManager {
                 this.currentState = 'confirm_completion';
                 break;
             case 'send_tou':
-                this.displayMessage("Enter email address to send Terms of Use:", false);
-                const touMessage = document.createElement('div');
-                touMessage.innerHTML = 'Review <a href="https://adobe.ly/3XZdkZe" target="_blank" class="tou-link">Sample TOU</a>';
-                this.displayMessage(touMessage);
                 this.currentState = 'send_tou_email';
+                const touMessage = document.createElement('div');
+                touMessage.className = 'summary-container';
+                touMessage.innerHTML = `
+                    <div class="summary-title">Send Terms of Use</div>
+                    <div class="summary-item">Enter email address to send Terms of Use:</div>
+                    <div class="summary-item">Review <a href="http://www.adobe.com" target="_blank" class="tou-link">Sample TOU</a></div>
+                `;
+                this.displayMessage(touMessage);
                 break;
             case 'share_project':
                 this.displayMessage("Enter email address to share the project:");
@@ -428,7 +436,7 @@ class ChatManager {
         this.currentState = 'selecting_features';
     }
 
-    handleAdditionalFeaturesSelection() {
+    async handleAdditionalFeaturesSelection() {
         const selectedFeatures = new Set();
         const checkboxes = document.querySelectorAll('.checkbox-options input:checked');
         
@@ -438,23 +446,55 @@ class ChatManager {
         }
 
         checkboxes.forEach(checkbox => {
-            selectedFeatures.add(checkbox.value);
+            // Convert checkbox values to match API expected format
+            const featureName = checkbox.value
+                .split('_')
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                .join('');
+            selectedFeatures.add(featureName);
         });
 
-        const featuresDiv = document.createElement('div');
-        featuresDiv.className = 'summary-container';
-        featuresDiv.innerHTML = `
-            <div class="summary-title">Additional Features Request</div>
-            <div class="summary-item">Your request for the following features has been submitted:</div>
-            ${Array.from(selectedFeatures).map(feature => `
-                <div class="summary-item">- ${feature.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</div>
-            `).join('')}
-            <div class="summary-item">You'll receive a confirmation once the requested features are configured</div>
-        `;
-        this.displayMessage(featuresDiv, false, [
-            { text: "Back to Lab Options", value: "back_to_management" }
-        ]);
-        this.currentState = 'lab_management';
+        // Prepare API request
+        const requestBody = {
+            engagement_id: 792, // This should come from your DR data in the future
+            features: Array.from(selectedFeatures)
+        };
+
+        try {
+            const response = await fetch('https://prod-57.eastus2.logic.azure.com:443/workflows/fae5e55f1e344c52b7a3e9ec7aeacd7a/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=oJfcz8qZLkcGOXZCO1i7HFvQWYsPkIfBfXE8JlsMtUA', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestBody)
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            // Display success message
+            const featuresDiv = document.createElement('div');
+            featuresDiv.className = 'summary-container';
+            featuresDiv.innerHTML = `
+                <div class="summary-title">Additional Features Request</div>
+                <div class="summary-item">Your request for the following features has been submitted:</div>
+                ${Array.from(selectedFeatures).map(feature => `
+                    <div class="summary-item">- ${feature}</div>
+                `).join('')}
+                <div class="summary-item">A Sales Velocity Manager will review and get back to you.</div>
+            `;
+            this.displayMessage(featuresDiv, false, [
+                { text: "Back to Lab Options", value: "back_to_management" }
+            ]);
+            this.currentState = 'lab_management';
+
+        } catch (error) {
+            console.error('Error:', error);
+            this.displayMessage("There was an error submitting your request. Please try again later.", false, [
+                { text: "Back to Lab Options", value: "back_to_management" }
+            ]);
+        }
     }
 
     handleEnvironmentOptions(input) {
@@ -563,17 +603,83 @@ class ChatManager {
             return;
         }
 
+        // Store email temporarily and show confirmation
+        this.tempEmail = input;
         const confirmDiv = document.createElement('div');
         confirmDiv.className = 'summary-container';
         confirmDiv.innerHTML = `
-            <div class="summary-title">Terms of Use Confirmation</div>
-            <div class="summary-item">Terms of Use will be sent to: ${input}</div>
+            <div class="summary-title">Confirm Terms of Use</div>
+            <div class="summary-item">Are you sure you want to send Terms of Use to: ${input}?</div>
         `;
         
         this.displayMessage(confirmDiv, false, [
-            { text: "Back to Lab Options", value: "back_to_management" }
+            { text: "Yes, Send TOU", value: "confirm_tou" },
+            { text: "Cancel", value: "back_to_management" }
         ]);
-        this.currentState = 'lab_management';
+        this.currentState = 'confirm_tou';
+    }
+
+    async handleTOUConfirmation(input) {
+        if (input === 'confirm_tou') {
+            // Show loading state
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'loading-container';
+            loadingDiv.innerHTML = `
+                <div class="loading-spinner"></div>
+                <div class="loading-text">Sending Terms of Use...</div>
+            `;
+            const loadingMessage = this.displayMessage(loadingDiv);  // Store reference to loading message
+
+            try {
+                const requestBody = {
+                    name: "User",
+                    email: this.tempEmail,
+                    sandboxProvisioningRequestID: 788
+                };
+
+                const response = await fetch('https://prod-05.eastus2.logic.azure.com:443/workflows/d4c6df16e6c248cf9a3c547980973e9c/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=6GJ02IZauvR_yHYlqpfE_Ag5RQluD7IXAiLvBv5XYCY', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                // Remove loading message
+                if (loadingMessage && loadingMessage.parentNode) {
+                    loadingMessage.parentNode.removeChild(loadingMessage);
+                }
+
+                const successDiv = document.createElement('div');
+                successDiv.className = 'summary-container';
+                successDiv.innerHTML = `
+                    <div class="summary-title">Terms of Use Sent</div>
+                    <div class="summary-item">Terms of Use has been sent to: ${this.tempEmail}</div>
+                `;
+                
+                this.displayMessage(successDiv, false, [
+                    { text: "Back to Lab Options", value: "back_to_management" }
+                ]);
+                this.currentState = 'lab_management';
+
+            } catch (error) {
+                console.error('Error:', error);
+                // Remove loading message
+                if (loadingMessage && loadingMessage.parentNode) {
+                    loadingMessage.parentNode.removeChild(loadingMessage);
+                }
+                
+                this.displayMessage("There was an error sending the Terms of Use. Please try again later.", false, [
+                    { text: "Back to Lab Options", value: "back_to_management" }
+                ]);
+            }
+        } else {
+            this.displayLabManagementOptions();
+        }
     }
 
     handleShareProjectEmail(input) {
