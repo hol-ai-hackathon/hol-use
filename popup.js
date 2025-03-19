@@ -1,31 +1,214 @@
 class ChatManager {
     constructor() {
-        this.currentState = 'initial';
+        // Initialize with saved state or default values
+        const savedState = this.loadState();
+        if (savedState) {
+            this.currentState = savedState.currentState;
+            this.selectedDR = savedState.selectedDR;
+            this.selectedSolutions = new Set(savedState.selectedSolutions);
+            this.emailList = new Set(savedState.emailList);
+            this.tempEmail = savedState.tempEmail;
+            this.pendingEmails = savedState.pendingEmails;
+        } else {
+            this.currentState = 'initial';
+            this.selectedDR = null;
+            this.selectedSolutions = new Set();
+            this.emailList = new Set();
+            this.tempEmail = null;
+            this.pendingEmails = null;
+        }
+
+        // Initialize DOM elements
         this.chatMessages = document.getElementById('chatMessages');
         this.userInput = document.getElementById('userInput');
         this.sendButton = document.getElementById('sendButton');
         
+        // Add event listeners
         this.sendButton.addEventListener('click', () => this.handleUserInput());
         this.userInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') this.handleUserInput();
         });
 
-        // Show initial options
-        this.displayInitialOptions();
+        // Restore chat history if exists
+        this.restoreChatHistory();
 
-        this.selectedDR = null;
-        this.selectedSolutions = new Set();
-        this.emailList = new Set();
+        // If no history, show initial options
+        if (!this.loadChatHistory()) {
+            this.displayInitialOptions();
+        }
+
+        // Add window focus event listener
+        window.addEventListener('focus', () => this.handleWindowFocus());
+
+        document.getElementById('clearChat')?.addEventListener('click', () => this.handleClearChat());
+    }
+
+    // Save state after each significant action
+    saveState() {
+        const state = {
+            currentState: this.currentState,
+            selectedDR: this.selectedDR,
+            selectedSolutions: Array.from(this.selectedSolutions),
+            emailList: Array.from(this.emailList),
+            tempEmail: this.tempEmail,
+            pendingEmails: this.pendingEmails
+        };
+        localStorage.setItem('holAgentState', JSON.stringify(state));
+    }
+
+    // Load saved state
+    loadState() {
+        const savedState = localStorage.getItem('holAgentState');
+        return savedState ? JSON.parse(savedState) : null;
+    }
+
+    // Save chat history
+    saveChatHistory() {
+        const messages = Array.from(this.chatMessages.children).map(msg => {
+            // Get the actual message content without the options
+            const messageContent = msg.querySelector('.message-content')?.innerHTML || '';
+            const messageData = {
+                content: messageContent,
+                isUser: msg.classList.contains('user-message'),
+                type: msg.getAttribute('data-message-type') || 'text'
+            };
+
+            // Save options if they exist
+            const options = msg.querySelector('.options-container');
+            if (options) {
+                messageData.options = Array.from(options.children).map(opt => ({
+                    text: opt.textContent,
+                    value: opt.getAttribute('data-value')
+                }));
+            }
+
+            return messageData;
+        });
+        localStorage.setItem('holAgentChat', JSON.stringify(messages));
+    }
+
+    // Load chat history
+    loadChatHistory() {
+        return JSON.parse(localStorage.getItem('holAgentChat'));
+    }
+
+    // Restore chat history
+    restoreChatHistory() {
+        const history = this.loadChatHistory();
+        const savedState = this.loadState();
+        
+        if (history && savedState) {
+            this.chatMessages.innerHTML = ''; // Clear existing messages
+            
+            // Restore state first
+            this.currentState = savedState.currentState;
+            this.selectedDR = savedState.selectedDR;
+            this.selectedSolutions = new Set(savedState.selectedSolutions);
+            this.emailList = new Set(savedState.emailList);
+            this.tempEmail = savedState.tempEmail;
+            this.pendingEmails = savedState.pendingEmails;
+
+            history.forEach(msg => {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = msg.isUser ? 'user-message' : 'bot-message';
+                
+                // Create content container
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'message-content';
+                contentDiv.innerHTML = msg.content;
+                messageDiv.appendChild(contentDiv);
+
+                // Recreate options if they exist
+                if (msg.options) {
+                    const optionsDiv = document.createElement('div');
+                    optionsDiv.className = 'options-container';
+                    msg.options.forEach(option => {
+                        // Create button with current state context
+                        const button = this.createClickableOptionWithState(
+                            option.text, 
+                            option.value, 
+                            this.currentState
+                        );
+                        optionsDiv.appendChild(button);
+                    });
+                    messageDiv.appendChild(optionsDiv);
+                }
+
+                this.chatMessages.appendChild(messageDiv);
+            });
+            this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
+        }
+    }
+
+    // Handle window focus
+    handleWindowFocus() {
+        const savedState = this.loadState();
+        if (savedState) {
+            this.currentState = savedState.currentState;
+            this.selectedDR = savedState.selectedDR;
+            this.selectedSolutions = new Set(savedState.selectedSolutions);
+            this.emailList = new Set(savedState.emailList);
+            this.tempEmail = savedState.tempEmail;
+            this.pendingEmails = savedState.pendingEmails;
+        }
     }
 
     createClickableOption(text, value) {
         const button = document.createElement('button');
-        button.className = 'option-button';
+        button.className = 'option-button chat-button';
         button.textContent = text;
+        button.setAttribute('data-value', value);
         button.addEventListener('click', () => {
-            this.displayMessage(text, true);
             this.handleUserInput(value);
         });
+        return button;
+    }
+
+    createClickableOptionWithState(text, value, state) {
+        const button = document.createElement('button');
+        button.className = 'option-button';
+        button.textContent = text;
+        button.setAttribute('data-value', value);
+        button.setAttribute('data-state', state);
+        
+        button.addEventListener('click', () => {
+            // Handle the click based on the stored state
+            switch(state) {
+                case 'confirm_users_needed':
+                    this.handleUserConfirmation(value);
+                    break;
+                case 'confirm_tou':
+                    this.handleTOUConfirmation(value);
+                    break;
+                case 'confirm_add_users':
+                    this.handleConfirmAddUsers(value);
+                    break;
+                case 'confirm_completion':
+                    this.handleConfirmCompletion(value);
+                    break;
+                case 'lab_management':
+                    this.handleLabManagement(value);
+                    break;
+                case 'env_options':
+                    this.handleEnvironmentOptions(value);
+                    break;
+                case 'support_options':
+                    this.handleSupportOptions(value);
+                    break;
+                case 'confirm_new_dr':
+                    if (value === 'confirm') {
+                        this.displayNewLabSolutionOptions();
+                    } else if (value === 'search_again') {
+                        this.currentState = 'search_new_dr';
+                        this.displayMessage("Please enter DR# or Opportunity Name:");
+                    }
+                    break;
+                default:
+                    this.handleUserInput(value);
+                    break;
+            }
+        });
+        
         return button;
     }
 
@@ -33,25 +216,31 @@ class ChatManager {
         const messageDiv = document.createElement('div');
         messageDiv.className = isUser ? 'user-message' : 'bot-message';
         
-        if (typeof message === 'string') {
-            messageDiv.textContent = message;
-        } else {
-            messageDiv.appendChild(message);
-        }
-        
-        this.chatMessages.appendChild(messageDiv);
+        // Create a container for the message content
+        const contentDiv = document.createElement('div');
+        contentDiv.className = 'message-content';
 
-        // If options are provided, display them as clickable buttons
+        if (typeof message === 'string') {
+            contentDiv.textContent = message;
+        } else {
+            contentDiv.appendChild(message);
+        }
+        messageDiv.appendChild(contentDiv);
+
+        // Add options if they exist
         if (options) {
             const optionsDiv = document.createElement('div');
             optionsDiv.className = 'options-container';
             options.forEach(option => {
-                optionsDiv.appendChild(this.createClickableOption(option.text, option.value));
+                const button = this.createClickableOption(option.text, option.value);
+                optionsDiv.appendChild(button);
             });
-            this.chatMessages.appendChild(optionsDiv);
+            messageDiv.appendChild(optionsDiv);
         }
 
+        this.chatMessages.appendChild(messageDiv);
         this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
+        this.saveChatHistory();
         return messageDiv;
     }
 
@@ -235,7 +424,17 @@ class ChatManager {
             case 'confirm_tou':
                 this.handleTOUConfirmation(userInput);
                 break;
+            case 'confirm_clear':
+                if (input === 'confirm_clear') {
+                    this.resetState();
+                } else {
+                    this.displayLabManagementOptions();
+                }
+                break;
         }
+
+        // Save state
+        this.saveState();
     }
 
     handleInitialChoice(input) {
@@ -785,11 +984,21 @@ class ChatManager {
     }
 
     resetState() {
-        // Reset all stored data
+        // Clear all state
+        this.currentState = 'initial';
         this.selectedDR = null;
         this.selectedSolutions.clear();
         this.emailList.clear();
-        this.currentState = 'initial';
+        this.tempEmail = null;
+        this.pendingEmails = null;
+
+        // Clear all storage
+        localStorage.clear();  // This will clear everything in localStorage
+
+        // Clear the chat messages
+        this.chatMessages.innerHTML = '';
+
+        // Start fresh
         this.displayInitialOptions();
     }
 
@@ -942,6 +1151,22 @@ class ChatManager {
 
         this.emailList = new Set(emails);
         this.displayNewLabSummary();
+    }
+
+    // Add confirmation before clearing
+    handleClearChat() {
+        const confirmDiv = document.createElement('div');
+        confirmDiv.className = 'summary-container';
+        confirmDiv.innerHTML = `
+            <div class="summary-title">Clear History</div>
+            <div class="summary-item">Are you sure? This will permanently delete all chat history.</div>
+        `;
+        
+        this.displayMessage(confirmDiv, false, [
+            { text: "Yes, Clear Everything", value: "confirm_clear" },
+            { text: "Cancel", value: "cancel_clear" }
+        ]);
+        this.currentState = 'confirm_clear';
     }
 }
 
