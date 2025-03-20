@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Labs - Adobe Hands-on Labs</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/pages/mylabs.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="nav-container">
+            <ul class="nav-list">
+                <li><a href="submit.html">Submit Request</a></li>
+                <li><a href="mylabs.html" class="active">My Labs</a></li>
+                <li><a href="materials.html">Lab Materials</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <div class="mylabs-container">
+            <div class="page-header">
+                <h1>My Labs</h1>
+                <div class="filters">
+                    <select id="statusFilter" class="filter-select">
+                        <option value="all">All Status</option>
+                        <option value="active">Active</option>
+                        <option value="pending">Pending</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                    <input type="text" id="searchLabs" class="search-input" placeholder="Search labs...">
+                </div>
+            </div>
+
+            <div class="labs-grid" id="labsGrid">
+                <!-- Labs will be populated here -->
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 SV HOL Portal. All rights reserved.</p>
+    </footer>
+
+    <script src="../js/pages/mylabs.js"></script>
+</body>
+</html> 

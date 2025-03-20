@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Details - Adobe Hands-on Labs</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/pages/detail.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="nav-container">
+            <ul class="nav-list">
+                <li><a href="submit.html">Submit Request</a></li>
+                <li><a href="mylabs.html">My Labs</a></li>
+                <li><a href="materials.html">Lab Materials</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <div class="detail-container">
+            <div class="back-link">
+                <a href="mylabs.html">&larr; Back to My Labs</a>
+            </div>
+
+            <div class="lab-detail-content">
+                <!-- Content will be populated by JavaScript -->
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 SV HOL Portal. All rights reserved.</p>
+    </footer>
+
+    <!-- Extension Confirmation Modal -->
+    <div id="extensionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Request Extension</h2>
+                <button class="modal-close" onclick="labDetail.closeExtensionModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to request an extension for this lab?</p>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="labDetail.closeExtensionModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="labDetail.confirmExtension()">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Extension Success Modal -->
+    <div id="extensionSuccessModal" class="modal">
+        <div class="modal-content success-modal">
+            <div class="modal-header">
+                <h2>Success</h2>
+                <button class="modal-close" onclick="labDetail.closeExtensionSuccessModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="success-icon">✓</div>
+                <p>Extension request submitted successfully!</p>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-primary" onclick="labDetail.closeExtensionSuccessModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/pages/detail.js"></script>
+</body>
+</html> 

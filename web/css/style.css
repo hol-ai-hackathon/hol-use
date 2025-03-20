@@ -1,0 +1,543 @@
+:root {
+    --adobe-red: #ec0d02;
+    --adobe-blue: #1473e6;
+    --text-color: #333;
+    --bg-light: #f5f5f5;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    position: relative;
+    font-family: adobe-clean, 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+}
+
+.main-nav {
+    background-color: var(--adobe-red);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 2rem;
+}
+
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.nav-links a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.main-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.welcome-section {
+    text-align: center;
+    padding: 4rem 0;
+}
+
+.welcome-section h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.action-buttons {
+    margin-top: 2rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.3s;
+}
+
+.btn-primary {
+    background-color: var(--adobe-red);
+    color: white;
+}
+
+.btn-secondary {
+    background-color: var(--adobe-blue);
+    color: white;
+}
+
+.btn:hover {
+    opacity: 0.9;
+}
+
+footer {
+    text-align: center;
+    padding: 2rem;
+    background-color: var(--bg-light);
+    margin-top: auto;
+}
+
+.active {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.dr-result-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+.dr-result-item:last-child {
+    margin-bottom: 0;
+}
+
+.no-results {
+    text-align: center;
+    color: #666;
+    padding: 1rem;
+}
+
+/* Add these styles to your main style.css file to ensure they apply globally */
+
+/* Base styles for all input elements */
+input[type="text"],
+input[type="email"],
+input[type="search"],
+input[type="password"],
+textarea,
+select {
+    width: 100% !important;
+    padding: 12px !important;
+    margin-bottom: 15px !important;
+    border: 1px solid #ccc !important;
+    border-radius: 4px !important;
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+    font-family: inherit !important;
+    background-color: #fff !important;
+    transition: border-color 0.2s ease-in-out !important;
+}
+
+/* Focus states */
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="search"]:focus,
+input[type="password"]:focus,
+textarea:focus,
+select:focus {
+    outline: none !important;
+    border-color: var(--adobe-blue) !important;
+    box-shadow: 0 0 0 2px rgba(44, 119, 216, 0.2) !important;
+}
+
+/* Specific styles for textareas */
+textarea {
+    min-height: 100px !important;
+    resize: vertical !important;
+}
+
+/* Search input specific styles */
+.search-container input[type="text"],
+.search-container input[type="search"] {
+    min-width: 300px !important;
+    height: 40px !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+}
+
+/* Form group styling */
+.form-group {
+    margin-bottom: 20px !important;
+}
+
+.form-group label {
+    display: block !important;
+    margin-bottom: 8px !important;
+    font-weight: 500 !important;
+    color: var(--adobe-text) !important;
+}
+
+/* Modal input styling */
+.modal-body input[type="text"],
+.modal-body input[type="email"],
+.modal-body textarea {
+    width: 100% !important;
+    margin-bottom: 16px !important;
+}
+
+/* Error states */
+input.error,
+textarea.error {
+    border-color: var(--adobe-red) !important;
+    background-color: rgba(255, 0, 0, 0.02) !important;
+}
+
+.error-message {
+    color: var(--adobe-red) !important;
+    font-size: 12px !important;
+    margin-top: -10px !important;
+    margin-bottom: 15px !important;
+}
+
+/* Placeholder styling */
+::placeholder {
+    color: #999 !important;
+    opacity: 1 !important;
+}
+
+/* Disabled state */
+input:disabled,
+textarea:disabled,
+select:disabled {
+    background-color: #f5f5f5 !important;
+    cursor: not-allowed !important;
+    opacity: 0.7 !important;
+}
+
+/* Add these styles for better checkbox appearance */
+.solution-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: #fff;
+    margin-bottom: 8px;
+}
+
+.solution-checkbox:hover {
+    background-color: #f8f8f8;
+    border-color: var(--adobe-blue);
+}
+
+.solution-checkbox input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    margin: 0;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.solution-checkbox input[type="checkbox"]:checked {
+    background-color: var(--adobe-blue);
+    border-color: var(--adobe-blue);
+}
+
+.solution-checkbox input[type="checkbox"]:checked::after {
+    content: '✓';
+    position: absolute;
+    color: white;
+    font-size: 14px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.solution-checkbox span {
+    font-size: 14px;
+    color: var(--adobe-text);
+}
+
+.solutions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+    margin: 15px 0;
+}
+
+/* Header styling */
+.header {
+    background-color: var(--adobe-red);
+    padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.site-title {
+    color: #ffffff !important;
+    margin: 0;
+    font-size: 24px;
+    font-weight: 500;
+    padding-left: 0;
+}
+
+.site-title a {
+    color: #ffffff !important;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+}
+
+.site-title a:hover {
+    opacity: 0.9;
+}
+
+.nav-menu {
+    margin-left: auto;
+}
+
+.nav-list {
+    display: flex;
+    gap: 40px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-list li a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 16px;
+    padding: 8px 0;
+    position: relative;
+    transition: opacity 0.2s ease;
+}
+
+.nav-list li a:hover {
+    opacity: 0.8;
+}
+
+.nav-list li a.active::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: white;
+    border-radius: 2px;
+}
+
+/* Help popup styles */
+.help-popup {
+    position: relative;
+    display: inline-block;
+}
+
+.help-popup .popup-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background-color: white;
+    padding: 15px;
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    width: 250px;
+    margin-top: 10px;
+    z-index: 1000;
+}
+
+.help-popup .popup-content::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    right: 20px;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid white;
+}
+
+.help-popup .popup-content.show {
+    display: block;
+}
+
+.help-popup .popup-content p {
+    margin: 0;
+    color: #333;
+    font-size: 14px;
+}
+
+.help-popup .popup-content a {
+    color: var(--adobe-blue);
+    text-decoration: none;
+}
+
+.help-popup .popup-content a:hover {
+    text-decoration: underline;
+}
+
+/* Main content wrapper */
+main {
+    flex: 1 0 auto;
+    width: 100%;
+    padding: 2rem 0;
+    min-height: calc(100vh - 140px); /* Adjust based on header + footer height */
+}
+
+/* Footer styles */
+.footer {
+    width: 100%;
+    background-color: #f5f5f5;
+    padding: 1rem 0;
+    text-align: center;
+    border-top: 1px solid #eee;
+    margin-top: auto;
+    position: sticky;
+    bottom: 0;
+}
+
+/* If needed, also add this to ensure no color inheritance */
+.header .site-title {
+    color: #ffffff !important;
+}
+
+/* Modal styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.show {
+    display: flex;
+    opacity: 1;
+}
+
+.modal-content {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+    transform: translateY(-20px);
+    transition: transform 0.3s ease;
+    margin: 0;
+}
+
+.modal.show .modal-content {
+    transform: translateY(0);
+}
+
+.success-modal .modal-body {
+    text-align: center;
+    padding: 30px 20px;
+}
+
+.success-icon {
+    width: 60px;
+    height: 60px;
+    background-color: #4CAF50;
+    border-radius: 50%;
+    color: white;
+    font-size: 36px;
+    line-height: 60px;
+    margin: 0 auto 20px;
+}
+
+.modal-header {
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 20px;
+    color: var(--adobe-text);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-close:hover {
+    color: var(--adobe-red);
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.modal-body p {
+    margin: 0;
+    line-height: 1.5;
+}
+
+.modal-actions {
+    padding: 15px 20px;
+    border-top: 1px solid #eee;
+    text-align: right;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+} 
