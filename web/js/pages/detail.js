@@ -287,16 +287,35 @@ class LabDetail {
     }
 
     submitFeatures() {
-        const selectedFeatures = Array.from(document.querySelectorAll('input[name="features"]:checked'))
-            .map(cb => cb.value);
+        const data = {
+            "engagement_id": "790",
+            "features": ["DynamicMedia", "BrandPortal"]
+        };
 
-        if (selectedFeatures.length === 0) {
-            alert('Please select at least one feature');
-            return;
-        }
+        const url = encodeURI('https://prod-57.eastus2.logic.azure.com:443/workflows/fae5e55f1e344c52b7a3e9ec7aeacd7a/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=oJfcz8qZLkcGOXZCO1i7HFvQWYsPkIfBfXE8JlsMtUA');
 
-        this.closeModal('featuresModal');
-        this.showSuccessMessage('Feature request submitted successfully!');
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            this.closeModal('featuresModal');
+            this.showSuccessMessage('Feature request submitted successfully!');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to submit feature request. Please try again.');
+        });
     }
 
     showTOUModal() {
@@ -310,8 +329,36 @@ class LabDetail {
             return;
         }
 
-        this.closeModal('touModal');
-        this.showSuccessMessage('Terms of Use sent successfully!');
+        const data = {
+            "name": "User",
+            "email": email,
+            "sandboxProvisioningRequestID": "788"
+        };
+
+        const url = encodeURI('https://prod-05.eastus2.logic.azure.com:443/workflows/d4c6df16e6c248cf9a3c547980973e9c/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=6GJ02IZauvR_yHYlqpfE_Ag5RQluD7IXAiLvBv5XYCY');
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            this.closeModal('touModal');
+            this.showSuccessMessage('Terms of Use sent successfully!');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to send Terms of Use. Please try again.');
+        });
     }
 
     showAddUsersModal() {
