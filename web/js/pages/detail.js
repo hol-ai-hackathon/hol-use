@@ -288,11 +288,11 @@ class LabDetail {
 
     submitFeatures() {
         const data = {
-            "engagement_id": "790",
-            "features": ["DynamicMedia", "BrandPortal"]
+            "engagement_id": this.projectId,
+            "sandboxProvisioningRequestID": parseInt(this.projectId, 10)
         };
 
-        const url = encodeURI('https://prod-57.eastus2.logic.azure.com:443/workflows/fae5e55f1e344c52b7a3e9ec7aeacd7a/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=oJfcz8qZLkcGOXZCO1i7HFvQWYsPkIfBfXE8JlsMtUA');
+        const url = 'https://prod-57.eastus2.logic.azure.com:443/workflows/fae5e55f1e344c52b7a3e9ec7aeacd7a/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=oJfcz8qZLkcGOXZCO1i7HFvQWYsPkIfBfXE8JlsMtUA';
 
         fetch(url, {
             method: 'POST',
@@ -306,9 +306,13 @@ class LabDetail {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-            return response.json();
+            const contentType = response.headers.get("content-type");
+            if (contentType && contentType.includes("application/json")) {
+                return response.json();
+            }
+            return null;
         })
-        .then(data => {
+        .then(() => {
             this.closeModal('featuresModal');
             this.showSuccessMessage('Feature request submitted successfully!');
         })
@@ -335,7 +339,7 @@ class LabDetail {
             "sandboxProvisioningRequestID": "788"
         };
 
-        const url = encodeURI('https://prod-05.eastus2.logic.azure.com:443/workflows/d4c6df16e6c248cf9a3c547980973e9c/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=6GJ02IZauvR_yHYlqpfE_Ag5RQluD7IXAiLvBv5XYCY');
+        const url = 'https://prod-05.eastus2.logic.azure.com:443/workflows/d4c6df16e6c248cf9a3c547980973e9c/triggers/manual/paths/invoke?api-version=2016-10-01&sp=/triggers/manual/run&sv=1.0&sig=6GJ02IZauvR_yHYlqpfE_Ag5RQluD7IXAiLvBv5XYCY';
 
         fetch(url, {
             method: 'POST',
