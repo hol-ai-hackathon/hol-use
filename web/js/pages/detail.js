@@ -286,51 +286,51 @@ class LabDetail {
         this.showModal('featuresModal');
     }
 
-    submitFeatures() {
-        // Get email from the input field
+    async submitFeatures() {
+        if (!authService.isAuthenticated()) {
+            alert('Please sign in to submit features');
+            return;
+        }
+
         const emailInput = document.getElementById('emailInput');
         const email = emailInput.value.trim();
 
-        // Validate email
         if (!email) {
             alert('Please enter an email address');
             return;
         }
 
-        const data = {
-            "sandboxProvisioningRequestID": this.projectId,
-            "email": email,
-            "name": email.split('@')[0]  // Derive name from email (part before @)
-        };
+        try {
+            const token = await authService.getToken();
 
-        const url = 'https://prod-57.eastus2.logic.azure.com:443/workflows/fae5e55f1e344c52b7a3e9ec7aeacd7a/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=oJfcz8qZLkcGOXZCO1i7HFvQWYsPkIfBfXE8JlsMtUA';
+            const data = {
+                "sandboxProvisioningRequestID": this.projectId,
+                "email": email,
+                "name": email.split('@')[0]
+            };
 
-        fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response => {
+            const url = 'https://prod-57.eastus2.logic.azure.com:443/workflows/fae5e55f1e344c52b7a3e9ec7aeacd7a/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=oJfcz8qZLkcGOXZCO1i7HFvQWYsPkIfBfXE8JlsMtUA';
+
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(data)
+            });
+
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-            const contentType = response.headers.get("content-type");
-            if (contentType && contentType.includes("application/json")) {
-                return response.json();
-            }
-            return null;
-        })
-        .then(() => {
+
             this.closeModal('featuresModal');
             this.showSuccessMessage('Feature request submitted successfully!');
-        })
-        .catch(error => {
+        } catch (error) {
             console.error('Error:', error);
             alert('Failed to submit feature request. Please try again.');
-        });
+        }
     }
 
     showTOUModal() {
