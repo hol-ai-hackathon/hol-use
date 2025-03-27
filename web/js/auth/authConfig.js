@@ -1,6 +1,6 @@
 const msalConfig = {
     auth: {
-        clientId: "3e13ef05-1a3d-49d1-b9a1-5ad1b3a3efed",  // The one you got from Azure AD registration
+        clientId: "0075f1c3-bf1e-4161-bae5-698e3c7fe457",  // The one you got from Azure AD registration
         authority: "https://login.microsoftonline.com/fa7b1b5a-7b34-4387-94ae-d2c178decee1",  // Your tenant ID
         redirectUri: window.location.origin + "/web/",
     },
