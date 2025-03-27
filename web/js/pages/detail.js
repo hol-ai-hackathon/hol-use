@@ -287,26 +287,10 @@ class LabDetail {
     }
 
     async submitFeatures() {
-        if (!authService.isAuthenticated()) {
-            alert('Please sign in to submit features');
-            return;
-        }
-
-        const emailInput = document.getElementById('emailInput');
-        const email = emailInput.value.trim();
-
-        if (!email) {
-            alert('Please enter an email address');
-            return;
-        }
-
         try {
-            const token = await authService.getToken();
-
             const data = {
                 "sandboxProvisioningRequestID": this.projectId,
-                "email": email,
-                "name": email.split('@')[0]
+                "features": ["DynamicMedia", "BrandPortal"]
             };
 
             const url = 'https://prod-57.eastus2.logic.azure.com:443/workflows/fae5e55f1e344c52b7a3e9ec7aeacd7a/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=oJfcz8qZLkcGOXZCO1i7HFvQWYsPkIfBfXE8JlsMtUA';
@@ -315,8 +299,7 @@ class LabDetail {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'Authorization': `Bearer ${token}`
+                    'Accept': 'application/json'
                 },
                 body: JSON.stringify(data)
             });
@@ -403,6 +386,30 @@ class LabDetail {
 
     validateEmail(email) {
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    async handleMarkComplete() {
+        const confirmMessage = document.getElementById('confirmMessage');
+        const confirmValidation = document.getElementById('confirmValidation');
+        
+        if (!confirmMessage.checked) {
+            confirmValidation.textContent = 'Please confirm to mark as complete';
+            confirmValidation.style.display = 'block';
+            return;
+        }
+
+        try {
+            await this.markLabComplete();
+            this.closeModal('confirmModal');
+            this.showSuccessMessage('Lab marked as complete successfully!');
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Failed to mark lab as complete. Please try again.');
+        }
+    }
+
+    closeExtensionModal() {
+        this.closeModal('extensionModal');
     }
 }
 
