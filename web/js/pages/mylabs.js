@@ -3,6 +3,7 @@ class MyLabs {
         this.initializeElements();
         this.attachEventListeners();
         this.loadLabs();
+        this.labToMarkComplete = null;
     }
 
     initializeElements() {
@@ -106,17 +107,45 @@ class MyLabs {
         this.renderLabs(filteredLabs);
     }
 
-    async markComplete(labId) {
-        if (confirm('Are you sure you want to mark this lab as complete?')) {
+    markComplete(labId) {
+        this.labToMarkComplete = labId;
+        this.showModal('confirmModal');
+    }
+
+    async confirmMarkComplete() {
+        if (!this.labToMarkComplete) return;
+
+        try {
             // Mock API call
-            console.log(`Marking lab ${labId} as complete`);
+            console.log(`Marking lab ${this.labToMarkComplete} as complete`);
             
             // Update local data
-            const lab = this.labs.find(l => l.id === labId);
+            const lab = this.labs.find(l => l.id === this.labToMarkComplete);
             if (lab) {
                 lab.status = 'completed';
                 this.filterLabs(); // Re-render with updated data
             }
+
+            this.closeModal('confirmModal');
+            // Rest of your success handling
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Failed to mark lab as complete. Please try again.');
+        }
+        this.labToMarkComplete = null;
+    }
+
+    closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    showModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.style.display = 'block';
         }
     }
 }

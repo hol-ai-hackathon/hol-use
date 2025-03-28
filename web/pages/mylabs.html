@@ -43,6 +43,23 @@
         <p>&copy; 2025 SV HOL Portal. All rights reserved.</p>
     </footer>
 
+    <!-- Add this modal structure at the end of body, before scripts -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Are You Sure?</h2>
+                <button class="modal-close" onclick="myLabs.closeModal('confirmModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to mark this lab as complete?</p>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="myLabs.closeModal('confirmModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="myLabs.confirmMarkComplete()">Yes, Mark Complete</button>
+            </div>
+        </div>
+    </div>
+
     <script src="../js/pages/mylabs.js"></script>
 </body>
 </html> 

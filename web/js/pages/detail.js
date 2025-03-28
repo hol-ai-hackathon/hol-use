@@ -3,6 +3,13 @@ class LabDetail {
         this.initializeElements();
         this.loadLabDetails();
         this.addModalsToPage();
+
+        // Add event listener for TOU button
+        document.getElementById('touModal').addEventListener('click', (e) => {
+            if (e.target.id === 'sendTOUBtn') {
+                this.sendTOU();
+            }
+        });
     }
 
     initializeElements() {
@@ -189,7 +196,7 @@ class LabDetail {
                 </div>
                 <div class="modal-actions">
                     <button class="btn btn-secondary" onclick="labDetail.closeModal('touModal')">Cancel</button>
-                    <button class="btn btn-primary" onclick="labDetail.sendTOU()">Send TOU</button>
+                    <button class="btn btn-primary" id="sendTOUBtn">Send TOU</button>
                 </div>
             </div>
         `;
@@ -320,43 +327,61 @@ class LabDetail {
         this.showModal('touModal');
     }
 
-    sendTOU() {
-        const email = document.getElementById('touEmail').value;
-        if (!this.validateEmail(email)) {
-            alert('Please enter a valid email address');
-            return;
-        }
+    async sendTOU() {
+        const touModal = document.getElementById('touModal');
+        const touBtn = document.querySelector('#touModal .btn-primary');
+        const emailInput = document.getElementById('touEmail');
+        if (!touBtn || !emailInput || !touModal) return;
 
-        const data = {
-            "name": "User",
-            "email": email,
-            "sandboxProvisioningRequestID": 788
-        };
+        const email = emailInput.value.trim();
+        
+        // Create overlay with loader and text
+        const overlay = document.createElement('div');
+        overlay.className = 'modal-overlay';
+        
+        const loader = document.createElement('div');
+        loader.className = 'loader';
+        
+        const loaderText = document.createElement('div');
+        loaderText.className = 'loader-text';
+        loaderText.textContent = 'Sending TOU...';
+        
+        overlay.appendChild(loader);
+        overlay.appendChild(loaderText);
+        
+        try {
+            // Add overlay to modal
+            touModal.querySelector('.modal-content').appendChild(overlay);
+            
+            // Disable all buttons in modal
+            touModal.querySelectorAll('button').forEach(button => button.disabled = true);
 
-        const url = 'https://prod-05.eastus2.logic.azure.com:443/workflows/d4c6df16e6c248cf9a3c547980973e9c/triggers/manual/paths/invoke?api-version=2016-10-01&sp=/triggers/manual/run&sv=1.0&sig=6GJ02IZauvR_yHYlqpfE_Ag5RQluD7IXAiLvBv5XYCY';
+            const response = await fetch('https://prod-05.eastus2.logic.azure.com:443/workflows/d4c6df16e6c248cf9a3c547980973e9c/triggers/manual/paths/invoke?api-version=2016-10-01&sp=/triggers/manual/run&sv=1.0&sig=6GJ02IZauvR_yHYlqpfE_Ag5RQluD7IXAiLvBv5XYCY', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    "name": "User",
+                    "email": email,
+                    "sandboxProvisioningRequestID": 788
+                })
+            });
 
-        fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-            return response.json();
-        })
-        .then(data => {
+
+            this.showSuccessMessage('TOU sent successfully!');
             this.closeModal('touModal');
-            this.showSuccessMessage('Terms of Use sent successfully!');
-        })
-        .catch(error => {
+        } catch (error) {
             console.error('Error:', error);
-            alert('Failed to send Terms of Use. Please try again.');
-        });
+            alert('Failed to send TOU. Please try again.');
+        } finally {
+            // Remove overlay and re-enable buttons
+            overlay.remove();
+            touModal.querySelectorAll('button').forEach(button => button.disabled = false);
+        }
     }
 
     showAddUsersModal() {
