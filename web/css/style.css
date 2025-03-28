@@ -310,29 +310,22 @@ select:disabled {
 
 /* Header styling */
 .header {
-    background-color: var(--spectrum-blue);
-    padding: 1rem 0;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.nav-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
+    background-color: var(--spectrum-blue);
+    padding: 0 20px;
+    min-height: 60px;
 }
 
 .site-title {
-    color: var(--spectrum-gray-50) !important;
+    display: block;
     margin: 0;
-    font-size: 24px;
-    font-weight: 500;
-    padding-left: 0;
+    padding: 10px;
+    color: white;
+    font-size: 20px;
+    flex: 0 0 auto;  /* Prevent title from shrinking */
+    margin-right: 40px;  /* Add space between title and navigation */
 }
 
 .site-title a {
@@ -345,8 +338,11 @@ select:disabled {
     opacity: 0.9;
 }
 
-.nav-menu {
-    margin-left: auto;
+nav {
+    display: flex;
+    gap: 20px;  /* Consistent spacing between nav items */
+    align-items: center;
+    margin-left: auto;  /* Push navigation to the right */
 }
 
 .nav-list {
@@ -590,10 +586,20 @@ nav a:hover {
     background-color: var(--spectrum-blue-hover);
 }
 
-/* Remove/update active link styles */
-nav a.active {
+/* Update active link styles */
+nav a.active,
+.nav-list a.active {
     background-color: var(--spectrum-blue-hover);
-    /* Remove any text-shadow or other effects that make it unreadable */
+    border-radius: 4px;
+    color: white;
+    padding: 8px 16px;
+}
+
+/* Hover state for non-active links */
+nav a:hover:not(.active),
+.nav-list a:hover:not(.active) {
+    background-color: var(--spectrum-blue-hover);
+    border-radius: 4px;
 }
 
 /* Inline validation messages */
@@ -664,4 +670,44 @@ input.error {
     margin-top: 10px;
     color: #444;
     font-size: 14px;
+}
+
+header {
+    /* Make sure header has enough height and proper flex layout */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--spectrum-blue);
+    padding: 0 20px;
+    min-height: 60px;
+}
+
+/* Add these specific styles without modifying existing header styles */
+.nav-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    /*width: 100%;*/
+}
+
+.nav-menu {
+    margin-left: auto;
+}
+
+.nav-list {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 20px;
+}
+
+.nav-list li {
+    margin: 0;
+}
+
+.nav-list a {
+    color: white;
+    text-decoration: none;
+    padding: 8px 16px;
 } 
