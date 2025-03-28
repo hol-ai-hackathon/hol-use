@@ -330,7 +330,7 @@ class LabDetail {
         const data = {
             "name": "User",
             "email": email,
-            "sandboxProvisioningRequestID": "788"
+            "sandboxProvisioningRequestID": 788
         };
 
         const url = 'https://prod-05.eastus2.logic.azure.com:443/workflows/d4c6df16e6c248cf9a3c547980973e9c/triggers/manual/paths/invoke?api-version=2016-10-01&sp=/triggers/manual/run&sv=1.0&sig=6GJ02IZauvR_yHYlqpfE_Ag5RQluD7IXAiLvBv5XYCY';
